@@ -43,6 +43,8 @@ The following example simulates the three compartment PK model using FastPKSim.j
 We will simulate a patient model with parameter values $\theta$ with constant infusions and boluses as inputs.
 
 ```julia
+using FastPKSim, Plots
+
 θ = [1.f0,2.f0,3.f0,4.f0,5.f0,6.f0] # Parameter values, k10, k12, k13, k21, k31, V1
 
 nu = 50 # length of input
@@ -59,5 +61,5 @@ pksim!(y, θ, u, v, hs, youts) # Simulate model
 
 plot(time[youts], y, xlabel="time", ylabel="y", label="")
 ```
-![Simulation result](https://github.com/wahlquisty/FastPKSim.jl/tree/main/example/simresult.png)
+![Simulation result](example/simresult.png)
 
