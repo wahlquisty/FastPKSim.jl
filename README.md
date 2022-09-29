@@ -1,70 +1,61 @@
-# FastPKSim
+# FastPKSim.jl
 
 [![Build Status](https://github.com/wahlquisty/FastPKSim.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/wahlquisty/FastPKSim.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/wahlquisty/FastPKSim.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/wahlquisty/FastPKSim.jl)
 
 
-## TODO: replace text below 
-This package implements a discrete-time PID controller on the form
-$$U(s) = K \left( bR(s) - Y(s) + \dfrac{1}{sT_i} \left( R(s) - Y(s) \right) - \dfrac{sT_d}{1 + s T_d / N}Y(s) \right) + U_\textrm{ff}(s)$$
+This package implements a fast simulator of the three compartment pharmacokinetic (PK) model.
+
+$$ \dfrac{dx_1}{dt} = - (k_{10} + k_{12} + k_{13}) x_1 + k_{21} x_2 + k_{31} x_3 + \dfrac{1}{V_1} u $$
+$$ \dfrac{dx_2}{dt} = k_{12} x_1 - k_{21} x_2 $$
+$$ \dfrac{dx_3}{dt} = k_{13} x_1 - k_{31} x_3 $$
 
 where
-- $u(t) \leftrightarrow U(s)$ is the control signal
-- $y(t) \leftrightarrow Y(s)$ is the measurement signal
-- $r(t) \leftrightarrow R(s)$ is the reference / set point
-- $u_\textrm{ff}(t) \leftrightarrow U_\textrm{ff}(s)$ is the feed-forward contribution
-- $K$ is the proportional gain
-- $T_i$ is the integral time
-- $T_d$ is the derivative time
-- $N$ is the maximum derivative gain
-- $b \in [0, 1]$ is the proportion of the reference signal that appears in the proportional term.
+- $x_i(t)$ is the $i$th state
+- $k_{ij}$ is the transfer rate from compartment $j$ to $i$.
+- $u(t)$ is the input
+- $V_1$ is the central compartment volume.
 
-The controller further has output saturation controlled by `umin, umax` and integrator anti-windup controlled by the tracking time $T_t$.
+You can call the simulator using `pksim!` and the function modifies the input vector `y`.
+For speedup, use `Float32` values for your inputs.
 
-Construct a controller using
-```julia
-pid = DiscretePID(; K = 1, Ti = false, Td = false, Tt = √(Ti*Td), N = 10, b = 1, umin = -Inf, umax = Inf, Ts, I = 0, D = 0, yold = 0)
 ```
-and compute a control signal using
-```julia
-u = pid(r, y, uff)
-```
-or
-```julia
-u = calculate_control!(pid, r, y, uff)
-```
+    pksim!(y, θ, u, v, hs, youts)
+Fast simulation of the three compartment mammillary PK model.
 
-The parameters $K, T_i, T_d$ may be updated using the functions, `set_K!, set_Ti!, set_Td!`.
+The parameter vector θ has the following structure
+`θ = [k10, k12, k13, k21, k31, V1]`
+# Arguments:
+- `y`: Preallocated output vector of size length(youts)
+- `θ`: Parameter vector, see above.
+- `u`: Infusion rate vector of size length(hs)
+- `v`: Bolus dose vector of size length(hs)
+- `hs`: Step size, should have the size of [diff(time) diff(time)[end]] where time is the matching time vector to u, v
+- `youts`: Indices for output observations, corresponding to times in hs
+
+Updates `y` with simulated outputs x_1/V_1 at time instances `youts`.
+```
 
 ## Example:
-The following example simulates the PID controller using ControlSystems.jl. We will simulate a load disturbance $d(t) = 1$ entering on the process input, while the reference is $r(t) = 0$.
+The following example simulates the three compartment PK model using FastPKSim.jl.
+We will simulate a patient model with parameter values $\theta$ with constant infusions and boluses as inputs.
 
 ```julia
-using DiscretePIDs, ControlSystems, Plots
-Tf = 15 # Simulation time
-K  = 1
-Ti = 1
-Td = 1
-Ts = 0.01 # sample time
+θ = [1.f0,2.f0,3.f0,4.f0,5.f0,6.f0] # Parameter values, k10, k12, k13, k21, k31, V1
 
-P   = c2d(ss(tf(1, [1, 1])), Ts) # Process to be controlled
-pid = DiscretePID(; K, Ts, Ti, Td)
+nu = 50 # length of input
+u = [1.1f0*ones(Float32,10) ; 0.1f0*ones(Float32,nu-10)] # Infusion rates
+v = [2.0f0*ones(Float32,10) ;0.0f0*ones(Float32,nu-10)  ] # Bolus doses
 
-ctrl = function(x,t)
-    y = (P.C*x)[] # measurement
-    d = 1         # disturbance
-    r = 0         # reference
-    u = pid(r, y)
-    u + d # Plant input is control signal + disturbance
-end
+time = 0.f0:1.f0:nu
+hs = diff(time)
 
-res = lsim(P, ctrl, Tf)
+youts = [2, 3, 6, 7, 9, 13, 16, 27, 46, 47] # observation times, matching time vector
 
-plot(res, plotu=true); ylabel!("u + d", sp=2)
+y = zeros(length(youts)) # Create output vector
+pksim!(y, θ, u, v, hs, youts) # Simulate model
+
+plot(time[youts], y, xlabel="time", ylabel="y", label="")
 ```
-![Simulation result](https://user-images.githubusercontent.com/3797491/172366365-c1533aed-e877-499d-9ebb-01df62107dfb.png)
+![Simulation result](https://github.com/wahlquisty/FastPKSim.jl/tree/main/example/simresult.png?raw=true)
 
-## Details
-- The derivative term only acts on the (filtered) measurement and not the command signal. It is thus safe to pass step changes in the reference to the controller. The parameter $b$ can further be set to zero to avoid step changes in the control signal in response to step changes in the reference.
-- Bumpless transfer when updating `K` is realized by updating the state `I`. See the docs for `set_K!` for more details.
-- The total control signal $u(t)$ (PID + feed-forward) is limited by the integral anti-windup.

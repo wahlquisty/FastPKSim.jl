@@ -52,7 +52,7 @@ Fast simulation of the three compartment mammillary PK model.
 
 The parameter vector θ has the following structure
 ```
-θ = [k10, k12, k13, k21, k31, V1]'
+θ = [k10, k12, k13, k21, k31, V1]
 ```
 # Arguments:
 - `y`: Preallocated output vector of size length(youts)
