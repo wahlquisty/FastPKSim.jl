@@ -7,7 +7,9 @@
 This package implements a fast simulator of the three compartment pharmacokinetic (PK) model.
 
 $$ \dfrac{dx_1}{dt} = - (k_{10} + k_{12} + k_{13}) x_1 + k_{21} x_2 + k_{31} x_3 + \dfrac{1}{V_1} u $$
+
 $$ \dfrac{dx_2}{dt} = k_{12} x_1 - k_{21} x_2 $$
+
 $$ \dfrac{dx_3}{dt} = k_{13} x_1 - k_{31} x_3 $$
 
 where
@@ -57,5 +59,5 @@ pksim!(y, θ, u, v, hs, youts) # Simulate model
 
 plot(time[youts], y, xlabel="time", ylabel="y", label="")
 ```
-![Simulation result](https://github.com/wahlquisty/FastPKSim.jl/tree/main/example/simresult.png?raw=true)
+![Simulation result](https://github.com/wahlquisty/FastPKSim.jl/tree/main/example/simresult.png)
 
