@@ -1,6 +1,7 @@
 # FastPKSim
 
 [![Coverage](https://codecov.io/gh/wahlquisty/FastPKSim.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/wahlquisty/FastPKSim.jl)
+[![Build Status](https://github.com/wahlquisty/FastPKSim.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/wahlquisty/FastPKSim.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
 ## TODO: replace text below 
 This package implements a discrete-time PID controller on the form
