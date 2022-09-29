@@ -1,10 +1,7 @@
 # Mamillary three-compartment model functions
 # Computes eigenvalues and R column vector of the three compartment mammillary model.
 
-# Date: 220926
-
 using StaticArrays, LinearAlgebra
-# This file is for now just test case for mammillary three-compartment model
 
 # Initiate/update parameters
 function update(θ)
@@ -46,7 +43,7 @@ end
     d1 = a2 * a1
     d2 = -a3*a1
     d3 = a2*a3
-    Qinv = @SMatrix [l1^2/d1 l1/d1 1/d1; l2^2/d2 l2/d2 1/d2; l3^2/d3 l3/d3 1/d3]
-    b = @SVector [1, k21 + k31, k21 * k31] # Quite often we would only be interested in the first column (first output). See paper for computations.
+    Qinv = @SMatrix [(l1/d1)*l1 l1/d1 1/d1; (l2/d2)*l2 l2/d2 1/d2; (l3/d3)*l3 l3/d3 1/d3]
+    b = @SVector [1, k21 + k31, k21 * k31] # We are only interested in the first output
     return Qinv * b
 end

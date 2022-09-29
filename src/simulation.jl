@@ -1,5 +1,4 @@
-# Date: 220629
-# Here, we assume that we are only looking for the concentration of the central compartment volume
+# We are only looking for the concentration of the central compartment volume
 
 using StaticArrays, SLEEFPirates
 
