@@ -1,19 +1,10 @@
 module FastPKSim
 
-export main
+export main, pksim!
 
-# Write your package code here.
-function main()
-    n = 10
-    a = zeros(n)
-    for i = 1:n
-        a[i] = squareroot(i)
-    end
-    return a
-end
+using LinearAlgebra,StaticArrays, SLEEFPirates
 
-function squareroot(x)
-    return sqrt(x)
-end
+include("simulation.jl") # functions to simulate state and compute output
+include("pkmodels.jl") # calculations of λ, R from parameter vector θ
 
 end

@@ -3,6 +3,11 @@ uuid = "b0ae6185-9f73-47b1-8c06-57e18f526c0d"
 authors = ["Ylva Wahlquist <ylva.wahlquist@control.lth.se> and contributors"]
 version = "0.1.0"
 
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+SLEEFPirates = "476501e8-09a2-5ece-8869-fb82de89a1fa"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+
 [compat]
 julia = "1"
 
