@@ -13,7 +13,7 @@ $$ \dfrac{dx_2}{dt} = k_{12} x_1 - k_{21} x_2 $$
 $$ \dfrac{dx_3}{dt} = k_{13} x_1 - k_{31} x_3 $$
 
 where
-- $x_i(t)$ is the $i$th state
+- $x_i(t)$ is the ith state
 - $k_{ij}$ is the transfer rate from compartment $j$ to $i$.
 - $u(t)$ is the input
 - $V_1$ is the central compartment volume.
