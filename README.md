@@ -3,6 +3,13 @@
 [![Build Status](https://github.com/wahlquisty/FastPKSim.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/wahlquisty/FastPKSim.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/wahlquisty/FastPKSim.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/wahlquisty/FastPKSim.jl)
 
+## Installation
+
+To install, in the Julia REPL:
+
+```julia
+using Pkg; Pkg.add("https://github.com/wahlquisty/FastPKSim.jl")
+```
 
 This package implements a fast simulator of the three compartment pharmacokinetic (PK) model.
 
