@@ -35,7 +35,7 @@ The parameter vector θ has the following structure
 - `hs`: Step size, should have the size of [diff(time) diff(time)[end]] where time is the matching time vector to u, v
 - `youts`: Indices for output observations, corresponding to times in hs
 
-Updates `y` with simulated outputs x_1/V_1 at time instances `youts`.
+Updates `y` with simulated output `x_1` at time instances `youts`.
 ```
 
 ## Example:
