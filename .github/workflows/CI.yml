@@ -20,7 +20,7 @@ jobs:
         version:
           - '1.8'
         os:
-          - Linux
+          - ubuntu-latest
         arch:
           - x64
     steps:
