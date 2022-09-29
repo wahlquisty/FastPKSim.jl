@@ -3,13 +3,7 @@
 [![Build Status](https://github.com/wahlquisty/FastPKSim.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/wahlquisty/FastPKSim.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/wahlquisty/FastPKSim.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/wahlquisty/FastPKSim.jl)
 
-## Installation
 
-To install, in the Julia REPL:
-
-```julia
-using Pkg; Pkg.add("https://github.com/wahlquisty/FastPKSim.jl")
-```
 
 This package implements a fast simulator of the three compartment pharmacokinetic (PK) model.
 
@@ -28,6 +22,7 @@ where
 You can call the simulator using `pksim!` and the function modifies the input vector `y`.
 For speedup, use `Float32` values for your inputs.
 
+
 ```
     pksim!(y, θ, u, v, hs, youts)
 Fast simulation of the three compartment mammillary PK model.
@@ -43,6 +38,14 @@ The parameter vector θ has the following structure
 - `youts`: Indices for output observations, corresponding to times in hs
 
 Updates `y` with simulated output `x_1` at time instances `youts`.
+```
+
+## Installation
+
+To install, in the Julia REPL:
+
+```julia
+using Pkg; Pkg.add("https://github.com/wahlquisty/FastPKSim.jl")
 ```
 
 ## Example:
