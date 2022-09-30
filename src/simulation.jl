@@ -62,7 +62,7 @@ The parameter vector θ has the following structure
 
 Updates `y` with simulated outputs `x_1` at time instances `youts`.
 """
-function PKsim!(y, θ, u, v, hs, youts)
+function pksim!(y, θ, u, v, hs, youts)
     λ, λinv, R = update(θ) # Setting up simulator
     j = 1 # counter to keep track of next free spot in y
     x = @SVector zeros(eltype(u), 3) # initial state
