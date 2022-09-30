@@ -6,8 +6,9 @@ using StaticArrays, LinearAlgebra
 # Initiate/update parameters
 function update(θ)
     λ = getλ(θ)
+    λinv = 1 ./ λ
     R = getR(θ, λ)
-    return λ, R
+    return λ, λinv, R
 end
 
 # Compute eigenvalues λ for 3 compartment mammillary model
