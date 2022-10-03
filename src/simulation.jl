@@ -10,8 +10,8 @@ using StaticArrays, SLEEFPirates
 end
 
 # update state with input step
-@inline function step(x, λ, Φdiag, u)
-    Γdiag = @. 1 / λ * (Φdiag - 1)
+@inline function step(x, λinv, Φdiag, u)
+    Γdiag = @. λinv * (Φdiag - 1)
     return @. Φdiag * x + Γdiag * u
 end
 
@@ -28,22 +28,21 @@ end
 end
 
 # Initiate/update state
-@inline function updatestate(x::AbstractVector{T}, h, λ, u=zero(T), v=zero(T)) where {T}
+@inline function updatestate(x::AbstractVector{T}, h, λ, λinv, u=zero(T), v=zero(T)) where {T}
     Φdiag = getΦdiag(λ, h) # compute Φ
     x = bolus(x, v) # update state for bolus
-    x = step(x, λ, Φdiag, u) # infusion affect next sample
+    x = step(x, λinv, Φdiag, u) # infusion affect next sample
     return x
 end
 
 # Update state and compute output
-@inline function updatestateoutput(x::AbstractVector{T}, h, V1, λ, R, u=zero(T), v=zero(T)) where {T}
+@inline function updatestateoutput(x::AbstractVector{T}, h, V1inv, λ, λinv, R, u=zero(T), v=zero(T)) where {T}
     Φdiag = getΦdiag(λ, h) # compute Φ
     x = bolus(x, v) # update state for bolus
-    y = gety(x, V1, R) # compute output
-    x = step(x, λ, Φdiag, u) # infusion affect next sample
+    y = gety(x, V1inv, R) # compute output
+    x = step(x, λinv, Φdiag, u) # infusion affect next sample
     return x, y
 end
-
 
 """
     pksim!(y, θ, u, v, hs, youts)
@@ -64,16 +63,16 @@ The parameter vector θ has the following structure
 Updates `y` with simulated outputs `x_1` at time instances `youts`.
 """
 function pksim!(y, θ, u, v, hs, youts)
-    λ, R = update(θ) # Setting up simulator
+    λ, λinv, R = update(θ) # Setting up simulator
     j = 1 # counter to keep track of next free spot in y
     x = @SVector zeros(eltype(u), 3) # initial state
     for i in eachindex(u, hs, v)
         if i in youts # if we want to compute output
-            x, yi = @inbounds updatestateoutput(x, hs[i], θ[6], λ, R, u[i], v[i]) # update state and compute output
+            x, yi = @inbounds updatestateoutput(x, hs[i], θ[6], λ, λinv, R, u[i], v[i]) # update state and compute output
             y[j] = yi
             j += 1
         else
-            x = @inbounds updatestate(x, hs[i], λ, u[i], v[i]) # update state
+            x = @inbounds updatestate(x, hs[i], λ, λinv, u[i], v[i]) # update state
         end
     end
     return y
