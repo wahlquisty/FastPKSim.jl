@@ -5,13 +5,14 @@
 
 
 
-This package implements a fast simulator of the three compartment pharmacokinetic (PK) model.
+This package implements a fast simulator of the one, two and three compartment pharmacokinetic (PK) model.
+The three compartment model is described by the following differential equations
 
 $$ \dfrac{dx_1}{dt} = - (k_{10} + k_{12} + k_{13}) x_1 + k_{21} x_2 + k_{31} x_3 + \dfrac{1}{V_1} u $$
 
 $$ \dfrac{dx_2}{dt} = k_{12} x_1 - k_{21} x_2 $$
 
-$$ \dfrac{dx_3}{dt} = k_{13} x_1 - k_{31} x_3 $$
+$$ \dfrac{dx_3}{dt} = k_{13} x_1 - k_{31} x_3, $$
 
 where
 - $x_i(t)$ is the ith state
@@ -36,6 +37,7 @@ The parameter vector θ has the following structure
 - `v`: Bolus dose vector of size length(hs)
 - `hs`: Step size, should have the size of [diff(time) diff(time)[end]] where time is the matching time vector to u, v
 - `youts`: Indices for output observations, corresponding to times in hs
+- `order`: Model order. If argument is left out, order = 3
 
 Updates `y` with simulated output `x_1` at time instances `youts`.
 ```
@@ -45,7 +47,7 @@ Updates `y` with simulated output `x_1` at time instances `youts`.
 To install, in the Julia REPL:
 
 ```julia
-using Pkg; Pkg.add("https://github.com/wahlquisty/FastPKSim.jl")
+using Pkg; Pkg.add(url="https://github.com/wahlquisty/FastPKSim.jl")
 ```
 
 ## Example:

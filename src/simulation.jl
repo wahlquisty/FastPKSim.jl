@@ -59,6 +59,7 @@ The parameter vector θ has the following structure
 - `v`: Bolus dose vector of size length(hs)
 - `hs`: Step size, should have the size of [diff(time) diff(time)[end]] where time is the matching time vector to u, v
 - `youts`: Indices for output observations, corresponding to times in hs
+- `order`: Model order. If argument is left out, order = 3
 
 Updates `y` with simulated outputs `x_1` at time instances `youts`.
 """

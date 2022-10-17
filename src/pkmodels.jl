@@ -23,7 +23,7 @@ end
 
 
 function getλ(θ::AbstractVector{T}, order) where {T}
-    if order == 1 # remove case 1?
+    if order == 1
         return -θ[1]
 
     elseif order == 2
