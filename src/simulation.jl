@@ -65,7 +65,6 @@ Updates `y` with simulated outputs `x_1` at time instances `youts`.
 """
 function pksim!(y, θ, u, v, hs, youts; order = 3)
     model = PK(θ, order)
-    # λ, λinv, R = update(θ) # Setting up simulator
     j = 1 # counter to keep track of next free spot in y
     x = @SVector zeros(eltype(u), 3) # initial state
     for i in eachindex(u, hs, v)
