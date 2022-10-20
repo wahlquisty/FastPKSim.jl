@@ -4,13 +4,13 @@
 using StaticArrays, LinearAlgebra
 
 # Initiate/update parameters
-function PK1(θ)
-    V1inv = 1 / θ[6]
-    λ = -θ[1]
-    λinv = 1 / λ
-    R = one(1)
-    return V1inv, λ, λinv, R
-end
+# function PK1(θ)
+#     V1inv = 1 / θ[6]
+#     λ = -θ[1]
+#     λinv = 1 / λ
+#     R = one(1)
+#     return V1inv, λ, λinv, R
+# end
 
 # Initiate/update parameters
 function PK2(θ)
