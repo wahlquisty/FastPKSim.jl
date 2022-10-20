@@ -65,7 +65,7 @@ Updates `y` with simulated outputs `x_1` at time instances `youts`.
 function pk3sim!(y, θ, u, v, hs, youts)
     V1inv, λ, λinv, R = PK3(θ)
     j = 1 # counter to keep track of next free spot in y
-    x = @SVector zeros(eltype(u), 3) # initial state
+    x = @SVector zeros(eltype(u), order) # initial state
     for i in eachindex(u, hs, v)
         if i in youts # if we want to compute output
             x, yi = @inbounds updatestateoutput(x, hs[i], V1inv, λ, λinv, R, u[i], v[i]) # update state and compute output
