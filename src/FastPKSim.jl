@@ -1,6 +1,6 @@
 module FastPKSim
 
-export main, pksim!
+export main, pk3sim!
 
 using LinearAlgebra,StaticArrays, SLEEFPirates
 
