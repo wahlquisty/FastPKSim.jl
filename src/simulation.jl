@@ -64,16 +64,16 @@ The parameter vector θ has the following structure
 Updates `y` with simulated outputs `x_1` at time instances `youts`.
 """
 function pksim!(y, θ, u, v, hs, youts; order = 3)
-    model = PK(θ, order)
+    V1inv, λ, λinv, R = PK(θ, order)
     j = 1 # counter to keep track of next free spot in y
-    x = @SVector zeros(eltype(u), 3) # initial state
+    x = @SVector zeros(eltype(u), order) # initial state
     for i in eachindex(u, hs, v)
         if i in youts # if we want to compute output
-            x, yi = @inbounds updatestateoutput(x, hs[i], model.V1inv, model.λ, model.λinv, model.R, u[i], v[i]) # update state and compute output
+            x, yi = @inbounds updatestateoutput(x, hs[i], V1inv, λ, λinv, R, u[i], v[i]) # update state and compute output
             y[j] = yi
             j += 1
         else
-            x = @inbounds updatestate(x, hs[i], model.λ, model.λinv, u[i], v[i]) # update state
+            x = @inbounds updatestate(x, hs[i], λ, λinv, u[i], v[i]) # update state
         end
     end
     return y

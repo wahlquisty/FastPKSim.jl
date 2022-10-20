@@ -3,23 +3,31 @@
 
 using StaticArrays, LinearAlgebra
 
-
-struct PK{T,V,L,LI,S,O}
-    θ::T
-    V1inv::V
-    λ::L
-    λinv::LI
-    R::S
-    order::O
-end
-
-function PK(θ, order) # constructor
-    λ = getλ(θ, order)
-    R = getR(θ, λ, order)
+# Initiate/update parameters
+function PK(θ, order)
     V1inv = 1 / θ[end]
+    λ = getλ(θ, order)
     λinv = 1 ./ λ
-    PK(θ, V1inv, λ, λinv, R, order)
+    R = getR(θ, λ, order)
+    return V1inv, λ, λinv, R
 end
+
+# struct PK{T,V,L,LI,S,O}
+#     θ::T
+#     V1inv::V
+#     λ::L
+#     λinv::LI
+#     R::S
+#     order::O
+# end
+
+# function PK(θ, order) # constructor
+#     λ = getλ(θ, order)
+#     R = getR(θ, λ, order)
+#     V1inv = 1 / θ[end]
+#     λinv = 1 ./ λ
+#     PK(θ, V1inv, λ, λinv, R, order)
+# end
 
 
 function getλ(θ::AbstractVector{T}, order) where {T}
