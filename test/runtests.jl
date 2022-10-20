@@ -101,7 +101,7 @@ using Test
 
     # Test 
     y = zeros(Float32,length(youts))
-    pksim!(y, θ, u, v, hs, youts, order = 3)
+    pk3sim!(y, θ, u, v, hs, youts, order = 3)
 
     # True output
     ytrue = [11.88856
