@@ -22,7 +22,7 @@ function PK(θ, order) # constructor
 end
 
 
-function getλ(θ::AbstractVector{T}, order) where {T}
+@inline @fastmath function getλ(θ::AbstractVector{T}, order) where {T}
     if order == 1
         return -θ[1]
 
