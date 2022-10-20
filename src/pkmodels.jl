@@ -4,45 +4,42 @@
 using StaticArrays, LinearAlgebra
 
 # Initiate/update parameters
-function PK(θ, order)
+function PK1(θ)
     V1inv = 1 / θ[end]
-    λ = getλ(θ, order)
-    λinv = 1 ./ λ
-    R = getR(θ, λ, order)
+    λ = -θ[1]
+    λinv = 1 / λ
+    R = one(1)
     return V1inv, λ, λinv, R
 end
 
-# struct PK{T,V,L,LI,S,O}
-#     θ::T
-#     V1inv::V
-#     λ::L
-#     λinv::LI
-#     R::S
-#     order::O
-# end
+# Initiate/update parameters
+function PK2(θ)
+    V1inv = 1 / θ[end]
+    λ = getλ_twocomp(θ)
+    λinv = 1 ./ λ
+    R = getR_twocomp(θ, λ)
+    return V1inv, λ, λinv, R
+end
 
-# function PK(θ, order) # constructor
-#     λ = getλ(θ, order)
-#     R = getR(θ, λ, order)
-#     V1inv = 1 / θ[end]
-#     λinv = 1 ./ λ
-#     PK(θ, V1inv, λ, λinv, R, order)
-# end
+# Initiate/update parameters
+function PK3(θ)
+    V1inv = 1 / θ[end]
+    λ = getλ_threecomp(θ)
+    λinv = 1 ./ λ
+    R = getR_threecomp(θ, λ)
+    return V1inv, λ, λinv, R
+end
 
 
-function getλ(θ::AbstractVector{T}, order) where {T}
-    if order == 1
-        return -θ[1]
-
-    elseif order == 2
+function getλ_twocomp(θ::AbstractVector{T}) where {T}
         k10, k12, k21, _ = θ
         a1 = (k10 + k12 + k21) / 2
         a2 = sqrt(a1^2 - k10 * k21)
         return @SVector [-a1 - a2, -a1 + a2] # The eigenvalues of the continuous-time system matrix
+end
 
-    elseif order == 3
-
-        k10, k12, k13, k21, k31, _ = θ
+function getλ_threecomp(θ::AbstractVector{T}) where {T}
+    k10, k12, k13, k21, k31, _ = θ
         b1 = k10 + k12 + k13 + k21 + k31
         b2 = k21 * (k10 + k13 + k31) + k31 * (k10 + k12)
         b3 = k10 * k21 * k31
@@ -61,14 +58,11 @@ function getλ(θ::AbstractVector{T}, order) where {T}
         a11 = a1 - a8 / 2
 
         return @SVector [-a1 - a8, -a10 - a11, a10 - a11] # The eigenvalues of the continuous-time system matrix
-    end
 end
 
+
 # Computation of R, nominators of the first-order systems
-@inline function getR(θ, λ, order) # samma för R
-    if order == 1
-        return one(1)
-    elseif order == 2
+@inline function getR_twocomp(θ, λ) # samma för R
         _, _, k21, _ = θ
         l1, l2 = λ
         a1 = l1 - l2
@@ -76,7 +70,9 @@ end
         Qinv = @SMatrix [l1*a1inv -a1inv; -l2*a1inv a1inv]
         b = @SVector [1, k21] # First column of P, only interested in the first output, x1
         return Qinv * b
-    elseif order == 3
+end
+
+@inline function getR_threecomp(θ, λ) # samma för R
         _, _, _, k21, k31, _ = θ
         l1, l2, l3 = λ
         a1 = l2 - l1
@@ -91,5 +87,4 @@ end
         Qinv = @SMatrix [(l1*d1inv)*l1 l1*d1inv d1inv; (l2*d2inv)*l2 l2*d2inv d2inv; (l3*d3inv)*l3 l3*d3inv d3inv]
         b = @SVector [1, k21 + k31, k21 * k31] # Quite often we would only be interested in the first column (first output). See paper for computations.
         return Qinv * b
-    end
 end
