@@ -2,13 +2,15 @@ using FastPKSim
 using Test
 
 @testset "FastPKSim.jl" begin
+
+    # Test third order model
     # Input data example
-    θ = [0.004379828
-    0.0036190297
-    0.0015290421
-    0.0012518701
-    8.4043735f-5
-    6.7705884]
+    θ_3 = [0.004379828
+        0.0036190297
+        0.0015290421
+        0.0012518701
+        8.4043735f-5
+        6.7705884]
 
     # Infusion rates
     u = [0.13888334
@@ -67,7 +69,7 @@ using Test
         300.0
         600.0
         300.0
-            0.08642578
+        0.08642578
         299.91357
         300.0
         300.0
@@ -99,9 +101,9 @@ using Test
         20
         21]
 
-    # Test 
-    y = zeros(Float32,length(youts))
-    pk3sim!(y, θ, u, v, hs, youts)
+    # simulate 
+    y = zeros(Float32, length(youts))
+    pk3sim!(y, θ_3, u, v, hs, youts)
 
     # True output
     ytrue = [11.88856
@@ -123,5 +125,61 @@ using Test
         0.38235474]
 
     @test y ≈ ytrue
+
+    # Test if PK3(θ) is correct
+    @test all(PK3(θ_3) .≈ (0.1476976506207348, [-6.134363611790634e-5, -0.010055415785499715, -0.0007470542134967702], [-16301.609478739358, -99.4488961303855, -1338.5909374893358], [0.003943514806270174, 0.9436193070471717, 0.05243717814655829]))
+
+
+    ## Test second order model
+
+    θ_2 = ones(4)
+    nt = 100
+    time = 0:1:nt
+    hs = diff(time)
+    u = ones(nt)
+    v = ones(nt)
+    youts = [1; 10; 13; 14; 15; 16; 20; 21; 22; 78; 79; 82; 84; 87; 90]
+
+    function simulatesecondorder(θ, u, v, h, youts)
+        k10, k12, k21, V1 = θ
+        A = [-(k10 + k12) k21
+            k21 -k21]
+
+        B = [1 / V1; 0]
+        C = [1 0]
+        D = 0
+
+        PK = ss(A, B, C, D)
+
+        nt = length(u)
+        y = zeros(nt,)
+        x = [0, 0] # Initial state vector
+
+        for i = 1:nt-1
+            if !iszero(v[i])
+                x = x + PK.B * v[i] # bolus
+                y[i] = x[1]
+            end
+            if h[i] == 0.0
+                y[i+1] = y[i]
+                continue
+            end
+            PK_d = c2d(PK, h[i])
+            x = PK_d.A * x + PK_d.B * u[i] # infusion
+            y[i+1] = x[1] # infusion affects next sample
+        end
+        y = y[youts] # observed outputs
+        return y
+    end
+
+    y = zeros(length(youts))
+    pk2sim!(y, θ_2, u, v, hs, youts)
+
+    ytrue = simulatesecondorder(θ_2, u, v, hs, youts)
+
+    @test y ≈ ytrue
+
+    # Test if PK2(θ is correct)
+    @test all(PK2(θ_2) .≈ (1.0, [-2.618033988749895, -0.3819660112501051], [-0.38196601125010515, -2.6180339887498953], [0.7236067977499789, 0.27639320225002106]))
 
 end

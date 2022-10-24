@@ -14,7 +14,7 @@ using StaticArrays, LinearAlgebra
 
 # Initiate/update parameters
 function PK2(θ)
-    V1inv = 1 / θ[6]
+    V1inv = 1 / θ[end]
     λ = getλ_twocomp(θ)
     λinv = 1 ./ λ
     R = getR_twocomp(θ, λ)
@@ -23,7 +23,7 @@ end
 
 # Initiate/update parameters
 function PK3(θ)
-    V1inv = 1 / θ[6]
+    V1inv = 1 / θ[end]
     λ = getλ_threecomp(θ)
     λinv = 1 ./ λ
     R = getR_threecomp(θ, λ)
@@ -42,9 +42,9 @@ end
 @inline function getR_twocomp(θ, λ) # samma för R
     _, _, k21, _ = θ
     l1, l2 = λ
-    a1 = l1 - l2
-    a1inv = 1 / a1
-    Qinv = @SMatrix [l1*a1inv -a1inv; -l2*a1inv a1inv]
+    d = l2 - l1
+    dinv = 1 / d
+    Qinv = @SMatrix [-l1*dinv -dinv; l2*dinv dinv]
     b = @SVector [1, k21] # First column of P, only interested in the first output, x1
     return Qinv * b
 end

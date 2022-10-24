@@ -77,3 +77,38 @@ function pk3sim!(y, θ, u, v, hs, youts)
     end
     return y
 end
+
+
+"""
+    pk2sim!(y, θ, u, v, hs, youts)
+Fast simulation of the two compartment PK model.
+
+The parameter vector θ has the following structure
+```
+θ = [k10, k12, k21, V1]
+```
+# Arguments:
+- `y`: Preallocated output vector of size length(youts)
+- `θ`: Parameter vector, see above.
+- `u`: Infusion rate vector of size length(hs)
+- `v`: Bolus dose vector of size length(hs)
+- `hs`: Step size, should have the size of [diff(time) diff(time)[end]] where time is the matching time vector to u, v
+- `youts`: Indices for output observations, corresponding to times in hs
+
+Updates `y` with simulated outputs `x_1` at time instances `youts`.
+"""
+function pk2sim!(y, θ, u, v, hs, youts)
+    V1inv, λ, λinv, R = PK2(θ)
+    j = 1 # counter to keep track of next free spot in y
+    x = @SVector zeros(eltype(u), 2) # initial state
+    for i in eachindex(u, hs, v)
+        if i in youts # if we want to compute output
+            x, yi = @inbounds updatestateoutput(x, hs[i], V1inv, λ, λinv, R, u[i], v[i]) # update state and compute output
+            y[j] = yi
+            j += 1
+        else
+            x = @inbounds updatestate(x, hs[i], λ, λinv, u[i], v[i]) # update state
+        end
+    end
+    return y
+end

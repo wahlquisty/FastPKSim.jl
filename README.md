@@ -5,7 +5,7 @@
 
 
 
-This package implements a fast simulator of the one, two and three compartment pharmacokinetic (PK) model.
+This package implements a fast simulator of the two and three compartment pharmacokinetic (PK) model.
 The three compartment model is described by the following differential equations
 
 $$ \dfrac{dx_1}{dt} = - (k_{10} + k_{12} + k_{13}) x_1 + k_{21} x_2 + k_{31} x_3 + \dfrac{1}{V_1} u $$
