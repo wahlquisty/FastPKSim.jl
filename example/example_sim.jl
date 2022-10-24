@@ -14,7 +14,7 @@ hs = diff(time)
 youts = [2, 3, 6, 7, 9, 13, 16, 27, 46, 47] # observation times, matching time vector
 
 y = zeros(length(youts)) # Create output vector
-pksim!(y, θ, u, v, hs, youts) # Simulate model
+pk3sim!(y, θ, u, v, hs, youts) # Simulate model
 
 plot(time[youts],y,xlabel="time",ylabel="y",label="")
 
