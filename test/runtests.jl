@@ -1,6 +1,8 @@
 using FastPKSim
 using Test
 
+using ControlSystemsBase
+
 @testset "FastPKSim.jl" begin
 
     # Test third order model
